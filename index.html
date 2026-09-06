@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>كوكب الشرق - أم كلثوم | جنود الخفاء</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-main: #0b111e;
+      --card-bg: #151f32;
+      --card-inner: #0f172a;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --accent: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #24344d;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .main-wrapper {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .top-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .group-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .digital-clock {
+      text-align: left;
+    }
+
+    .clock-time {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .clock-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .player-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 25px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+
+    .album-art {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 15px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 2.2rem;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .album-art.playing {
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+    }
+
+    .series-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .current-track-name {
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 15px;
+      min-height: 24px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .progress-container {
+      margin-bottom: 15px;
+    }
+
+    .time-slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #24344d;
+      border-radius: 6px;
+      outline: none;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #1e293b;
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .btn-main {
+      width: 58px;
+      height: 58px;
+      background: var(--primary);
+      color: #000;
+      font-size: 1.4rem;
+      border: none;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-main:hover {
+      background: var(--primary-hover);
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .audio-settings {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--card-inner);
+      padding: 8px 18px;
+      border-radius: 20px;
+      width: fit-content;
+      margin: 0 auto;
+      border: 1px solid var(--border-color);
+    }
+
+    .volume-slider {
+      width: 85px;
+      height: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .playlist-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 40px 10px 15px;
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding: 0 5px;
+    }
+
+    .episodes-list {
+      max-height: 350px;
+      overflow-y: auto;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .episodes-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .episodes-list::-webkit-scrollbar-thumb {
+      background: #2d3f5e;
+      border-radius: 4px;
+    }
+
+    .episode-item {
+      background: var(--card-inner);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .episode-item:hover {
+      background: #172439;
+      border-color: var(--border-color);
+    }
+
+    .episode-item.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--primary);
+    }
+
+    .episode-title {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .episode-item.active .episode-title {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer span {
+      color: var(--primary);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    
+    <div class="top-bar">
+      <div class="group-badge">
+        <i class="fa-solid fa-user-secret"></i>
+        <span>جنود الخفاء</span>
+      </div>
+      <div class="digital-clock">
+        <div class="clock-time" id="clock-time">00:00:00</div>
+        <div class="clock-date" id="clock-date">--/--/----</div>
+      </div>
+    </div>
+
+    <div class="player-card">
+      <div class="album-art" id="album-art">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+      <h1 class="series-title">كوكب الشرق - أم كلثوم</h1>
+      <div class="current-track-name" id="current-track-name">جاري جلب الروائع...</div>
+
+      <audio id="audio-core"></audio>
+
+      <div class="progress-container">
+        <input type="range" class="time-slider" id="time-slider" value="0" min="0" step="1">
+        <div class="time-display">
+          <span id="current-time">00:00</span>
+          <span id="duration-time">00:00</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="prev-btn" title="السابق"><i class="fa-solid fa-step-backward"></i></button>
+        <button class="btn" id="backward-btn" title="تأخير 10 ثواني"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="btn btn-main" id="play-btn" title="تشغيل"><i class="fa-solid fa-play" id="play-icon"></i></button>
+        <button class="btn" id="forward-btn" title="تقديم 10 ثواني"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="btn" id="next-btn" title="التالي"><i class="fa-solid fa-step-forward"></i></button>
+      </div>
+
+      <div class="audio-settings">
+        <i class="fa-solid fa-volume-high" id="volume-icon" style="color: var(--accent); cursor: pointer;"></i>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="1">
+      </div>
+    </div>
+
+    <div class="playlist-card">
+      <div class="search-box">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" id="search-input" placeholder="ابحث برقم أو اسم العمل في الـ 40 تحفة...">
+      </div>
+
+      <div class="list-header">
+        <span><i class="fa-solid fa-list-ol"></i> قائمة الروائع الأرشيفية الكاملة</span>
+        <span id="episodes-count">جاري التحميل الفوري...</span>
+      </div>
+
+      <ul class="episodes-list" id="episodes-list">
+        <li style="text-align: center; color: var(--text-muted); padding: 15px;">جاري سحب الـ 40 عملاً دفعة واحدة...</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      تم التطوير والتنظيم بواسطة <span>جنود الخفاء</span> &copy; 2026
+    </div>
+
+  </div>
+
+  <script>
+    // الـ 40 معرفاً كاملاً مرتبة ومصطفة
+    const identifiers = [
+      "sahran1957-tessgilette-zemene", "liliwnahari-1962", "nseek-OumKolthoum-TessgiletteZemene", "oum_kalthoum_sahra_maa_oum_kalthoum_vinyl_lp",
+      "umm-kulthum-fakarouny", "umm-kulthum-hagartak", "umm-kulthum-hasebak-lilzaman", "umm-kulthum-enta-omry_202602",
+      "umm-kulthum-awedt-aeiny", "umm-kulthum-amal-hayaty", "umm-kulthum-esal-rouhak", "umm-kulthum-laylet-hob",
+      "umm-kulthum-lissa-faker", "umm-kulthum-daleely-ehtar", "umm-kulthum-ya-zalemny", "umm-kulthum-ya-msaharny_202602",
+      "umm-kulthum-ahl-el-hawa", "umm-kulthum-el-hob-kedah", "umm-kulthum-ana-fee-entezarak", "umm-kulthum-el-hob-kolloh",
+      "umm-kulthum-yalli-kan-yechguik", "umm-kulthum-aqbal-al-laeil", "umm-kulthum-al-qalb-yaashak", "oum_kalthoum_al_atlal_vinyl_lp_studio",
+      "oum_kalthoum_zalamna_alhob_vinyl_lp_studio", "umm-kulthum-beatfaker-fe-mein", "umm-kulthum-mesh-momken-abadan", "oum_kalthoum_salou_qalbi_vinyl_lp_studio",
+      "oum_kalthoum_lil_sabr_huduoud_vinyl_lp_studio", "oum_kalthoum_fakkarouni_vinyl_lp_studio", "YaMsahharni-OumKolhtuoum", "oum_kalthoum_baaied_annak_vinyl_lp_studio",
+      "oum_kalthoum_ya_mesaharni_vinyl_lp_studio", "ThaouratEchchek", "oum_kalthoum_seret_elhob_vinyl_lp_studio", "oum_kalthoum_aqbal_allail_vinyl_lp_studio",
+      "oum_kalthoum_shams_el_aseel_vinyl_lp_studio", "oum_kalthoum_elhob_kolloh_vinyl_lp_studio", "oum_kalthoum_essal_rouhak_vinyl_lp_studio", "oum_kalthoum_hazihi_laylati_vinyl_lp_studio"
+    ];
+
+    const audio = document.getElementById('audio-core');
+    const playBtn = document.getElementById('play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const forwardBtn = document.getElementById('forward-btn');
+    const backwardBtn = document.getElementById('backward-btn');
+    const timeSlider = document.getElementById('time-slider');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationTimeEl = document.getElementById('duration-time');
+    const currentTrackNameEl = document.getElementById('current-track-name');
+    const episodesListEl = document.getElementById('episodes-list');
+    const episodesCountEl = document.getElementById('episodes-count');
+    const searchInput = document.getElementById('search-input');
+    const albumArt = document.getElementById('album-art');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeIcon = document.getElementById('volume-icon');
+
+    let episodes = [];
+    let filteredEpisodes = [];
+    let currentIndex = 0;
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString('ar-EG');
+      document.getElementById('clock-date').textContent = now.toLocaleDateString('ar-EG', {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+      });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // جلب الـ 40 رابط في نفس الوقت (Promise.all) لسرعة فائقة ووضعها تحت بعضها مباشرة
+    async function loadAllTracks() {
+      const promises = identifiers.map(async (id, index) => {
+        try {
+          const res = await fetch(`https://archive.org/metadata/${id}/files`);
+          const data = await res.json();
+          const rawFiles = data.result || [];
+          
+          let mp3List = rawFiles.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3'));
+          const originalMp3s = mp3List.filter(f => f.source === 'original');
+          if (originalMp3s.length > 0) {
+            mp3List = originalMp3s;
+          } else {
+            mp3List = mp3List.filter(f => {
+              const n = f.name.toLowerCase();
+              return !n.endsWith('_vbr.mp3') && !n.endsWith('_64kb.mp3') && !n.includes('_sample');
+            });
+          }
+
+          if (mp3List.length > 0) {
+            const file = mp3List[0];
+            let cleanName = decodeURIComponent(file.name.replace(/\.mp3$/i, ''));
+            cleanName = cleanName.replace(/(_vbr|_64kb)$/i, '').replace(/[-_]/g, ' ').trim();
+            cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+
+            return {
+              id: index,
+              globalId: index + 1,
+              name: cleanName || `روعة رقم ${index + 1}`,
+              url: `https://archive.org/download/${id}/${encodeURIComponent(file.name)}`
+            };
+          }
+        } catch (err) {
+          console.log(`خطأ في جلب: ${id}`);
+        }
+        return null;
+      });
+
+      const results = await Promise.all(promises);
+      episodes = results.filter(item => item !== null);
+      filteredEpisodes = [...episodes];
+      episodesCountEl.textContent = `${episodes.length} عملاً متصلاً`;
+      renderList();
+
+      if (episodes.length > 0) {
+        selectEpisode(0, false);
+      } else {
+        episodesListEl.innerHTML = '<li style="text-align: center; color: #ef4444; padding: 15px;">تعذر التحميل، تأكد من الاتصال</li>';
+      }
+    }
+
+    function renderList() {
+      episodesListEl.innerHTML = '';
+      if (filteredEpisodes.length === 0) {
+        episodesListEl.innerHTML = '<li style="text-align: center; color: var(--text-muted); padding: 15px;">لا توجد نتائج مطابقة للبحث</li>';
+        return;
+      }
+
+      filteredEpisodes.forEach(ep => {
+        const li = document.createElement('li');
+        li.className = `episode-item ${ep.id === currentIndex ? 'active' : ''}`;
+        li.innerHTML = `
+          <div class="episode-title">
+            <i class="fa-solid ${ep.id === currentIndex ? 'fa-circle-play' : 'fa-music'}"></i>
+            <span>#${ep.globalId} - ${ep.name}</span>
+          </div>
+          <i class="fa-solid fa-chevron-left" style="font-size:0.75rem; color:var(--text-muted)"></i>
+        `;
+        li.onclick = () => selectEpisode(ep.id, true);
+        episodesListEl.appendChild(li);
+      });
+    }
+
+    function selectEpisode(id, autoPlay = true) {
+      currentIndex = id;
+      const target = episodes.find(e => e.id === id);
+      if (!target) return;
+
+      audio.src = target.url;
+      currentTrackNameEl.textContent = target.name;
+      timeSlider.value = 0;
+      currentTimeEl.textContent = "00:00";
+      
+      renderList();
+
+      if (autoPlay) {
+        playTrack();
+      }
+    }
+
+    function playTrack() {
+      audio.play().then(() => {
+        playIcon.className = "fa-solid fa-pause";
+        albumArt.classList.add('playing');
+      }).catch(err => console.log(err));
+    }
+
+    function pauseTrack() {
+      audio.pause();
+      playIcon.className = "fa-solid fa-play";
+      albumArt.classList.remove('playing');
+    }
+
+    playBtn.onclick = () => audio.paused ? playTrack() : pauseTrack();
+
+    nextBtn.onclick = () => {
+      if (episodes.length === 0) return;
+      currentIndex = (currentIndex + 1) % episodes.length;
+      selectEpisode(currentIndex, true);
+    };
+
+    prevBtn.onclick = () => {
+      if (episodes.length === 0) return;
+      currentIndex = (currentIndex - 1 + episodes.length) % episodes.length;
+      selectEpisode(currentIndex, true);
+    };
+
+    forwardBtn.onclick = () => {
+      if (!isNaN(audio.duration)) {
+        audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
+      }
+    };
+
+    backwardBtn.onclick = () => {
+      audio.currentTime = Math.max(audio.currentTime - 10, 0);
+    };
+
+    audio.ontimeupdate = () => {
+      if (!isNaN(audio.duration)) {
+        timeSlider.max = Math.floor(audio.duration);
+        timeSlider.value = Math.floor(audio.currentTime);
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+        durationTimeEl.textContent = formatTime(audio.duration);
+      }
+    };
+
+    timeSlider.oninput = () => audio.currentTime = timeSlider.value;
+    audio.onended = () => nextBtn.click();
+
+    volumeSlider.oninput = () => {
+      audio.volume = volumeSlider.value;
+      volumeIcon.className = audio.volume === 0 ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+    };
+
+    volumeIcon.onclick = () => {
+      if (audio.volume > 0) {
+        audio.volume = 0;
+        volumeSlider.value = 0;
+        volumeIcon.className = 'fa-solid fa-volume-xmark';
+      } else {
+        audio.volume = 1;
+        volumeSlider.value = 1;
+        volumeIcon.className = 'fa-solid fa-volume-high';
+      }
+    };
+
+    searchInput.oninput = (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      filteredEpisodes = episodes.filter(ep => ep.name.toLowerCase().includes(q) || ep.globalId.toString().includes(q));
+      renderList();
+    };
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    loadAllTracks();
+  </script>
+</body>
+</html>
