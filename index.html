@@ -482,7 +482,7 @@
           const data = await res.json();
           const rawFiles = data.result || [];
           
-          let mp3List = rawFiles.filter(f => f.name && f.name.toLowerCase().endsWith('.mp3'));
+          let mp3List = rawFiles.filter(f => f.name && (f.name.toLowerCase().endsWith('.mp3') || (f.source === 'original' && f.format && /mp3/i.test(f.format))));
           const originalMp3s = mp3List.filter(f => f.source === 'original');
           if (originalMp3s.length > 0) {
             mp3List = originalMp3s;
@@ -497,6 +497,9 @@
             const file = mp3List[0];
             let cleanName = decodeURIComponent(file.name.replace(/\.mp3$/i, ''));
             cleanName = cleanName.replace(/(_vbr|_64kb)$/i, '').replace(/[-_]/g, ' ').trim();
+            if (!cleanName || cleanName.toLowerCase() === 'mp3') {
+              cleanName = (file.title || '').replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim();
+            }
             cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
 
             return {
